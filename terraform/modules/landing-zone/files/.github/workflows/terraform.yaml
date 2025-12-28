@@ -1,0 +1,10 @@
+name: "Terraform linting"
+description: "Sanitize Terraform files"
+
+on:
+  push:
+    branches-ignore: "main"
+
+jobs:
+  lint:
+    uses: mattias-fjellstrom-org/github-terraform-landing-zones/lint.yaml

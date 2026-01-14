@@ -1,0 +1,27 @@
+name: aws-plan
+
+on:
+  push:
+    branches-ignore: main
+  workflow_dispatch:
+
+env:
+  AWS_REGION : "eu-north-1"
+  AWS_IAM_ROLE_ARN: ${{ secrets.ALL_AWS_IAM_ROLE_ARN }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+      - run: terraform plan

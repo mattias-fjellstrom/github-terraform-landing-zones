@@ -32,14 +32,14 @@ resource "github_repository_file" "backend" {
   content    = var.state_backend
 }
 
-resource "github_actions_secret" "main_aws_iam_role_arn" {
+resource "github_actions_secret" "apply_aws_iam_role_arn" {
   repository      = github_repository.default.name
-  secret_name     = "MAIN_AWS_IAM_ROLE_ARN"
-  plaintext_value = aws_iam_role.main.arn
+  secret_name     = "APPLY_AWS_IAM_ROLE_ARN"
+  plaintext_value = aws_iam_role.apply.arn
 }
 
-resource "github_actions_secret" "all_aws_iam_role_arn" {
+resource "github_actions_secret" "plan_aws_iam_role_arn" {
   repository      = github_repository.default.name
-  secret_name     = "ALL_AWS_IAM_ROLE_ARN"
-  plaintext_value = aws_iam_role.all.arn
+  secret_name     = "PLAN_AWS_IAM_ROLE_ARN"
+  plaintext_value = aws_iam_role.plan.arn
 }

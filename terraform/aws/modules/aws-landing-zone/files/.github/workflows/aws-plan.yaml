@@ -1,13 +1,14 @@
 name: aws-plan
 
 on:
-  push:
-    branches-ignore: main
+  pull_request:
+    branches:
+      - main 
   workflow_dispatch:
 
 env:
   AWS_REGION : "eu-north-1"
-  AWS_IAM_ROLE_ARN: ${{ secrets.ALL_AWS_IAM_ROLE_ARN }}
+  AWS_IAM_ROLE_ARN: ${{ secrets.PLAN_AWS_IAM_ROLE_ARN }}
 
 permissions:
   id-token: write

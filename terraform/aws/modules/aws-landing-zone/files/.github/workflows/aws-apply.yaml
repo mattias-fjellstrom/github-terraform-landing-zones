@@ -1,13 +1,12 @@
 name: aws-apply
 
 on:
-  pull_request:
-    branches:
-      - main 
+  push:
+    branches: main
 
 env:
   AWS_REGION : "eu-north-1"
-  AWS_IAM_ROLE_ARN: ${{ secrets.MAIN_AWS_IAM_ROLE_ARN }}
+  AWS_IAM_ROLE_ARN: ${{ secrets.APPLY_AWS_IAM_ROLE_ARN }}
 
 permissions:
   id-token: write

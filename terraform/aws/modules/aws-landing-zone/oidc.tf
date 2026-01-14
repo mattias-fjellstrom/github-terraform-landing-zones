@@ -1,7 +1,8 @@
 locals {
-  issuer   = "https://token.actions.githubusercontent.com"
-  sub_all  = "repo:${var.github_owner}/${github_repository.default.name}:ref:refs/heads/*"
-  sub_main = "repo:${var.github_owner}/${github_repository.default.name}:ref:refs/heads/main"
+  issuer           = "https://token.actions.githubusercontent.com"
+  sub_all_branches = "repo:${var.github_owner}/${github_repository.default.name}:ref:refs/heads/*"
+  sub_main_branch  = "repo:${var.github_owner}/${github_repository.default.name}:ref:refs/heads/main"
+  sub_pull_request = "repo:${var.github_owner}/${github_repository.default.name}:pull_request"
 }
 
 data "aws_caller_identity" "current" {}
@@ -11,7 +12,7 @@ resource "aws_iam_openid_connect_provider" "github" {
   url            = local.issuer
 }
 
-data "aws_iam_policy_document" "main" {
+data "aws_iam_policy_document" "apply" {
   statement {
     effect = "Allow"
 
@@ -29,7 +30,7 @@ data "aws_iam_policy_document" "main" {
     condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [local.sub_main]
+      values   = [local.sub_main_branch]
     }
 
     condition {
@@ -40,7 +41,7 @@ data "aws_iam_policy_document" "main" {
   }
 }
 
-data "aws_iam_policy_document" "all" {
+data "aws_iam_policy_document" "plan" {
   statement {
     effect = "Allow"
 
@@ -58,7 +59,7 @@ data "aws_iam_policy_document" "all" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = [local.sub_all]
+      values   = [local.sub_all_branches, local.sub_pull_request]
     }
 
     condition {
@@ -69,22 +70,22 @@ data "aws_iam_policy_document" "all" {
   }
 }
 
-resource "aws_iam_role" "main" {
-  name_prefix        = "terraform-github-main"
-  assume_role_policy = data.aws_iam_policy_document.main.json
+resource "aws_iam_role" "apply" {
+  name_prefix        = "terraform-github-apply"
+  assume_role_policy = data.aws_iam_policy_document.apply.json
 }
 
-resource "aws_iam_role_policy_attachment" "main" {
-  role       = aws_iam_role.main.name
+resource "aws_iam_role_policy_attachment" "apply" {
+  role       = aws_iam_role.apply.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
-resource "aws_iam_role" "all" {
-  name_prefix        = "terraform-github-all"
-  assume_role_policy = data.aws_iam_policy_document.all.json
+resource "aws_iam_role" "plan" {
+  name_prefix        = "terraform-github-plan"
+  assume_role_policy = data.aws_iam_policy_document.plan.json
 }
 
 resource "aws_iam_role_policy_attachment" "read_only_access" {
-  role       = aws_iam_role.all.name
+  role       = aws_iam_role.plan.name
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }

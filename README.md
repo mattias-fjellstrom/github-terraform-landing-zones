@@ -10,7 +10,9 @@ The blog post discuss the setup when the target provider is Azure, the code for 
 
 If you want to try this out you should start by configuring your GitHub organization using the Terraform configuration under [terraform/organization/](./terraform/organization/).
 
-Next, provision the Terraform infrastructure under [terraform/azure/](./terraform/azure/).
+Next, run the script to create rulesets in [scripts/rulesets.sh](./scripts/rulesets.sh).
+
+Finally, provision the Terraform infrastructure under [terraform/azure/](./terraform/azure/).
 
 * * *
 

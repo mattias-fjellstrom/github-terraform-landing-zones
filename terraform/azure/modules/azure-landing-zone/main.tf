@@ -2,6 +2,8 @@ resource "github_repository" "default" {
   name        = var.name
   description = "GitHub landing zone for Terraform/Azure"
 
+  visibility = "private"
+
   has_discussions = false
   has_downloads   = false
   has_projects    = false
@@ -11,6 +13,20 @@ resource "github_repository" "default" {
     "azure",
     "terraform"
   ]
+}
+
+resource "github_repository_custom_property" "provider" {
+  repository     = github_repository.default.name
+  property_name  = "provider"
+  property_type  = "string"
+  property_value = ["azure"]
+}
+
+resource "github_repository_custom_property" "terraform" {
+  repository     = github_repository.default.name
+  property_name  = "terraform"
+  property_type  = "true_false"
+  property_value = ["true"]
 }
 
 locals {

@@ -1,0 +1,32 @@
+import "tfplan/v2" as tfplan
+import "collection/lists" as lists
+import "strings"
+
+approved = ["swedencentral", "westeurope"]
+
+violations = []
+
+for tfplan.resource_changes as addr, rc {
+  if rc.provider_name != "registry.terraform.io/hashicorp/azurerm" {
+    continue
+  }
+
+  actions = rc.change.actions
+  if not (actions contains "create" or actions contains "update") {
+    continue
+  }
+
+  if rc.change.after is null or not ("location" in rc.change.after) or rc.change.after.location is null {
+    continue
+  }
+
+  loc = strings.to_lower(strings.trim_space(rc.change.after.location))
+
+  if not (loc in approved) {
+    violations = lists.concat(violations, [addr])
+  }
+}
+
+main = rule {
+  length(violations) is 0
+}

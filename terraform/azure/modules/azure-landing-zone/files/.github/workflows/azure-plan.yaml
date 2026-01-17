@@ -1,5 +1,8 @@
 name: azure-plan
 
+concurrency:
+  group: terraform
+
 on:
   pull_request:
     branches:

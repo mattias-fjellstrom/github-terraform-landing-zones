@@ -24,11 +24,6 @@ resource "azurerm_role_assignment" "apply_contributor" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
 }
 
-moved {
-  from = azurerm_role_assignment.apply
-  to   = azurerm_role_assignment.apply_contributor
-}
-
 resource "azurerm_role_assignment" "apply_blob_contributor" {
   principal_id         = azuread_service_principal.apply.object_id
   role_definition_name = "Storage Blob Data Contributor"

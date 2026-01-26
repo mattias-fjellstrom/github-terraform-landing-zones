@@ -1,0 +1,47 @@
+name: Publish Terraform module
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  release-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Extract version number
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create a release
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+          
+          gh release create "$TAG" --title "$VERSION" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish module version
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="${{ steps.version.outputs.tag }}"
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+
+          TARBALL_URL="https://github.com/${OWNER}/${REPO}/archive/refs/tags/${TAG}.tar.gz"
+
+          curl -sS -X POST \
+            "${{ vars.MODULE_REGISTRY_PROTOCOL_URL }}/${{ vars.NAMESPACE }}/${{ vars.NAME }}/${{ vars.SYSTEM }}/${VERSION}/publish" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg url "$TARBALL_URL" '{url: $url}')" \
+            --fail

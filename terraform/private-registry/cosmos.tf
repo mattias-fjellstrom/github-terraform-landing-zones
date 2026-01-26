@@ -1,6 +1,5 @@
 resource "azurerm_cosmosdb_account" "terraform" {
-  # name                = "cosno-terraform-registry-${random_string.suffix.result}"
-  name                = "terraform-${random_string.suffix.result}"
+  name                = "cosno-terraform-registry-${random_string.suffix.result}"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
   offer_type          = "Standard"
@@ -22,8 +21,7 @@ resource "azurerm_cosmosdb_account" "terraform" {
 }
 
 resource "azurerm_cosmosdb_sql_database" "registry" {
-  # name                = "cosmos-terraform-registry-${random_string.suffix.result}"
-  name                = "registry"
+  name                = "cosmos-terraform-registry-${random_string.suffix.result}"
   account_name        = azurerm_cosmosdb_account.terraform.name
   resource_group_name = azurerm_resource_group.default.name
 }

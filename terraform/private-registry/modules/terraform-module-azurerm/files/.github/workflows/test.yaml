@@ -1,4 +1,4 @@
-name: Terraform test framework
+name: Test Terraform module
 
 on:
   pull_request:

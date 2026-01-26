@@ -1,23 +1,5 @@
-resource "azurerm_log_analytics_workspace" "default" {
-  name                = "log-terraform-registry-${random_string.suffix.result}"
-  location            = azurerm_resource_group.default.location
-  resource_group_name = azurerm_resource_group.default.name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
-}
-
-resource "azurerm_application_insights" "function" {
-  name                          = "appi-terraform-registry-${random_string.suffix.result}"
-  location                      = azurerm_resource_group.default.location
-  resource_group_name           = azurerm_resource_group.default.name
-  application_type              = "web"
-  workspace_id                  = azurerm_log_analytics_workspace.default.id
-  local_authentication_disabled = true
-}
-
 resource "azurerm_storage_account" "default" {
-  # name                            = "stterraformregistry${random_string.suffix.result}"
-  name                            = "stterraform${random_string.suffix.result}"
+  name                            = "stterraformregistry${random_string.suffix.result}"
   resource_group_name             = azurerm_resource_group.default.name
   location                        = azurerm_resource_group.default.location
   account_replication_type        = "LRS"
@@ -33,8 +15,7 @@ resource "azurerm_storage_container" "deployments" {
 }
 
 resource "azurerm_service_plan" "default" {
-  # name                = "asp-terraform-registry-${random_string.suffix.result}"
-  name                = "plan-terraform-registry"
+  name                = "asp-terraform-registry-${random_string.suffix.result}"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
   sku_name            = "FC1"
@@ -73,13 +54,7 @@ resource "azurerm_function_app_flex_consumption" "default" {
     AzureWebJobsStorage__credential  = "managedidentity"
     AzureWebJobsStorage__clientId    = azurerm_user_assigned_identity.function.client_id
     AzureWebJobsStorage__accountName = azurerm_storage_account.default.name
-
-    CosmosDBConnection = azurerm_cosmosdb_account.terraform.primary_sql_connection_string
-    # CosmosDBConnection__credential      = "managedidentity"
-    # CosmosDBConnection__clientId        = azurerm_user_assigned_identity.function.client_id
-    # CosmosDBConnection__accountEndpoint = azurerm_cosmosdb_account.terraform.endpoint
-
-    APPLICATIONINSIGHTS_AUTHENTICATION_STRING = "Authorization=AAD;ClientId=${azurerm_user_assigned_identity.function.client_id}"
+    CosmosDBConnection               = azurerm_cosmosdb_account.terraform.primary_sql_connection_string
   }
 }
 

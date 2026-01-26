@@ -5,7 +5,6 @@ resource "random_string" "suffix" {
 }
 
 resource "azurerm_resource_group" "default" {
-  # name     = "rg-terraform-registry-${random_string.suffix.result}"
-  name     = "rg-terraform-registry"
+  name     = "rg-terraform-registry-${random_string.suffix.result}"
   location = var.azure_location
 }

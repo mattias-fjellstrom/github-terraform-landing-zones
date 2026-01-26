@@ -13,3 +13,7 @@ variable "azure_location" {
 variable "azure_subscription_id" {
   type = string
 }
+
+variable "github_owner" {
+  type = string
+}

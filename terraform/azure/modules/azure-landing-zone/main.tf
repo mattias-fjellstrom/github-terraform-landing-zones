@@ -4,6 +4,7 @@ resource "github_repository" "default" {
 
   visibility = "private"
 
+  has_issues      = true
   has_discussions = false
   has_downloads   = false
   has_projects    = false
@@ -13,6 +14,12 @@ resource "github_repository" "default" {
     "azure",
     "terraform"
   ]
+}
+
+resource "github_issue_label" "drift" {
+  repository = github_repository.default.name
+  name       = "drift"
+  color      = "800080"
 }
 
 resource "github_repository_custom_property" "provider" {
@@ -40,6 +47,12 @@ resource "github_repository_file" "all" {
   repository = github_repository.default.name
   file       = each.key
   content    = file(each.value)
+
+  lifecycle {
+    ignore_changes = [
+      content,
+    ]
+  }
 }
 
 resource "github_repository_file" "backend" {
